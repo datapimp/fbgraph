@@ -4,7 +4,6 @@ require 'webrick'
 require 'json' unless defined? JSON
 
 module FacebookGraph
-  
   module Callback
     class Server
       attr_reader :http, :options, :pid
