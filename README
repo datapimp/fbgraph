@@ -1,5 +1,21 @@
-This is still a work in progress.  Plan to make a command line client for facebook in ruby.
+This is a module for developing facebook applications using the Graph API.
 
-Mostly for fun.
+It is still a work in progress.
 
-JS
+It includes a webrick server for handling callbacks from the facebook api.
+
+Reverse SSH Tunnel for allowing the Facebook API to make callbacks to a webrick server on your local development box ( for using oAuth2 and getting an access key)  This option will require you to have access to an SSH box which has GatewayPorts enabled.  For more info on reverse ssh tunnels, check 'man ssh' and 'man sshd_config'.
+
+To get started, edit the graph.yaml file in the config directory:
+
+For example:
+
+ssh_tunnel:
+  use_tunnel: true
+  public_host: datapimp.com
+  public_port: 8001
+  public_username: datapimp
+  local_port: 8000
+graph_api:
+  client_id: < generate this on the facebook site >
+  secret: < same here >

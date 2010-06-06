@@ -1,0 +1,9 @@
+ssh_tunnel:
+  use_tunnel: true
+  public_host: jonathansoeder.com
+  public_port: 8001
+  public_username: datapimp
+  local_port: 8000
+graph_api:
+  client_id: 
+  secret: 
