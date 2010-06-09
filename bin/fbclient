@@ -2,3 +2,7 @@
 
 #TODO Make it so this file references the gem'd version of the fbgraph_client
 require "#{ File.dirname(__FILE__) }/../lib/fbgraph"
+
+@client = FacebookGraph::Client.new
+
+puts @client.get "datapimp/photos"

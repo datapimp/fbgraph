@@ -13,8 +13,8 @@ class FacebookGraphClientTest < Test::Unit::TestCase
     end
     
     should "not be able to request a friends list without authorization" do
-      assert_raise RestClient::InternalServerError do
-        @client.get("datapmp/friends")
+      assert_raise RestClient::Request::Unauthorized do
+        @client.get("datapimp/friends")
       end
     end
   end
