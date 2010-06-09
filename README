@@ -1,21 +1,12 @@
 This is a module for communicating with facebook's graph API from the command line.  We aim to incorporate the ability to post status updates, view friends profiles, add links, upload pictures, like or comment stories in a person's feed, respond to events, inbox messages, etc
 
-It is still a work in progress.  This project is a "breakable toy" for me to use to become a better developer.
+It is still a work in progress. 
 
-It includes a webrick server for handling callbacks from the facebook api.  In addition a reverse SSH Tunnel is included for allowing the Facebook API to make callbacks to a webrick server on your local box ( mainly just for using oAuth2 and getting an access key)  This option will require you to have access to an SSH box which has GatewayPorts enabled.  For more info on reverse ssh tunnels, check 'man ssh' and 'man sshd_config'.
+It includes a webrick server for handling callbacks from the facebook api.  In addition there is a reverse SSH Tunnel is included for allowing the Facebook API to make callbacks to a webrick server on your local box ( mainly just for using oAuth2 and getting an access key)  This option will require you to have access to an SSH box which has GatewayPorts enabled.  For more info on reverse ssh tunnels, check 'man ssh' and 'man sshd_config'.
 
 If you are using this from a public facing box, you can disable the ssh tunnel.
 
-To get started, edit the graph.yml file in the config directory:
-
-example:
-
-ssh_tunnel:
-  use_tunnel: true
-  public_host: datapimp.com
-  public_port: 8000
-  public_username: datapimp
-  local_port: 8000
+TODO:  Demonstrate configuration options of the client, command line args / yaml config file
 
 Still left to do:
  
