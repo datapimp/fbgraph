@@ -1,21 +1,28 @@
-This is a module for developing facebook applications using the Graph API.
+This is a module for communicating with facebook's graph API from the command line.  We aim to incorporate the ability to post status updates, view friends profiles, add links, upload pictures, like or comment stories in a person's feed, respond to events, inbox messages, etc
 
-It is still a work in progress.
+It is still a work in progress.  This project is a "breakable toy" for me to use to become a better developer.
 
-It includes a webrick server for handling callbacks from the facebook api.
+It includes a webrick server for handling callbacks from the facebook api.  In addition a reverse SSH Tunnel is included for allowing the Facebook API to make callbacks to a webrick server on your local box ( mainly just for using oAuth2 and getting an access key)  This option will require you to have access to an SSH box which has GatewayPorts enabled.  For more info on reverse ssh tunnels, check 'man ssh' and 'man sshd_config'.
 
-Reverse SSH Tunnel for allowing the Facebook API to make callbacks to a webrick server on your local development box ( for using oAuth2 and getting an access key)  This option will require you to have access to an SSH box which has GatewayPorts enabled.  For more info on reverse ssh tunnels, check 'man ssh' and 'man sshd_config'.
+If you are using this from a public facing box, you can disable the ssh tunnel.
 
-To get started, edit the graph.yaml file in the config directory:
+To get started, edit the graph.yml file in the config directory:
 
-For example:
+example:
 
 ssh_tunnel:
   use_tunnel: true
   public_host: datapimp.com
-  public_port: 8001
+  public_port: 8000
   public_username: datapimp
   local_port: 8000
-graph_api:
-  client_id: < generate this on the facebook site >
-  secret: < same here >
+
+Still left to do:
+ 
+1) use nokogiri / mechanize to automate authorizing this application on your facebook profile ( just supply your login )
+2) automate handshaking with the graph api to get authorization credentials, store those credentials in your user environment for use in subsequent requests
+3) build out the various functions for communicating with the API
+
+( The end goal is for to have a single command line interface for facebook, twitter, and gmail, installable as a ruby gem.  If you are going to be using these distractions, might as well do it in the least distracting way possible: from the command line. )
+
+

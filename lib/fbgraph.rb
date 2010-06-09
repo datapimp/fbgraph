@@ -28,7 +28,6 @@ module FacebookGraph
         #TODO figure out a way to get the actual PID of the process being called
         tmp = Process.fork do
           system "ssh -nNT -g -R 0.0.0.0:#{ configuration['public_port'] }:0.0.0.0:#{ configuration['local_port'] } #{configuration['public_username']}@#{configuration['public_host']}"
-          $?
         end
         
         # FIXME
@@ -76,7 +75,7 @@ module FacebookGraph
         
         if Server.use_tunnel?
           @tunnel = Tunnel.new
-          sleep 2
+          sleep 3 #give the tunnel time to connect
         end
       end
       
@@ -99,8 +98,10 @@ module FacebookGraph
       end
     end
     
+    #TODO build out the handler objects for dealing with things like authorization
     class Hook < WEBrick::HTTPServlet::AbstractServlet
       def do_GET request,response
+        puts response.inspect
         response.status = 200
         response['Content-Type'] = "application/json"
         response.body = "{\"success\":true,\"method\":\"GET\"}"
@@ -120,9 +121,16 @@ module FacebookGraph
     
     def initialize options={}
       @options = options
+      @configuration = YAML.load_file("#{ File.dirname(__FILE__) }/../config/graph.yaml")
     end
-
+    
+    def auth_get resource, parameters={}
+      parameters.merge! :access_token => configuration['graph_api']['access_token']
+      get(resource,parameters)
+    end
+    
     def get resource, parameters={}
+      puts "Getting #{ build_uri(resource,parameters) }"
       JSON.parse RestClient.get( build_uri(resource,parameters) )
     end
 
@@ -130,17 +138,42 @@ module FacebookGraph
       JSON.parse RestClient.post( build_uri(resource,parameters) )
     end
     
-    def authorize
-      RestClient.get( build_uri("oauth/authorize", {:client_id=> configuration.graph_api.client_id }) )
+    # redirect the user in their browser to this url
+    # this will authorize us
+    def fetch_code_url
+      build_uri("oauth/authorize", {
+        :client_id=> configuration['graph_api']['client_id'],
+        :redirect_uri => callback_uri
+      })
     end
     
+    def fetch_authorization_url
+      build_uri("oauth/access_token", {
+        :client_id=> configuration['graph_api']['client_id'],
+        :client_secret => configuration['graph_api']['secret'],
+        :redirect_uri => callback_uri,
+        :code => configuration['graph_api']['code'],
+      })
+    end
+    
+    def sample
+      "http://localhost:8000/callback?code=2.8xCTEKzLYJsxHitFi53pUQ__.3600.1275807600-606735534%7CMCeCKkpMGX0t9eJ95_KauWXCAXw."
+    end
+
     protected 
 
+    def callback_uri
+      Callback::Server.use_tunnel? ? "http://#{ configuration['ssh_tunnel']['public_host'] }:#{ configuration['ssh_tunnel']['public_port'] }/callback/" : Server.configuration.callback_url
+    end
+    
     def build_uri resource,parameters={}
-      uri = "http://graph.facebook.com/" << resource
+      uri = "https://graph.facebook.com/" << "#{ resource }?"
       uri << parameters.inject([]) {|a,k| a << k.join("=") }.join("&") unless parameters.empty?
 
       uri
     end
   end
 end
+
+#@server = FacebookGraph::Callback::Server.new
+
