@@ -4,6 +4,7 @@ class FacebookGraphTunnelTest < Test::Unit::TestCase
   class << self
     attr_accessor :server, :last_test
   end
+  
   context "the callback server" do
     setup do
       @server ||= self.class.server ||= FacebookGraph::Callback::Server.new

@@ -8,7 +8,11 @@ class FacebookGraphAuthorizationTest < Test::Unit::TestCase
     end
     
     should "be given a url to use to authorize this application to access their profile" do
-      assert_not_nil @authorization.application_authorization_code
+      assert_not_nil @authorization.authorization_code_uri
+    end
+    
+    should "be given a url to request an access token" do
+      assert_not_nil @authorization.access_token_uri
     end
   end
 end

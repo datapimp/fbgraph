@@ -25,6 +25,13 @@ module FacebookGraph
     def post resource, parameters={}
       JSON.parse do_post(resource, parameters)
     end
+
+    def build_uri resource,parameters={}
+      uri = "https://graph.facebook.com/" << "#{ resource }?"
+      uri << parameters.inject([]) {|a,k| a << k.join("=") }.join("&") unless parameters.empty?
+
+      "#{ uri }"
+    end
     
     protected 
     
@@ -54,13 +61,6 @@ module FacebookGraph
       else
         return "http://#{ configuration['host'] }:#{ configuration['port'] }/fbgraph_callback"
       end
-    end
-    
-    def build_uri resource,parameters={}
-      uri = "https://graph.facebook.com/" << "#{ resource }?"
-      uri << parameters.inject([]) {|a,k| a << k.join("=") }.join("&") unless parameters.empty?
-
-      "#{ uri }"
     end
   end
 end
