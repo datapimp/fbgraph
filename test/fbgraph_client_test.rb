@@ -6,7 +6,7 @@ class FacebookGraphClientTest < Test::Unit::TestCase
       @client = FacebookGraph::Client.new 
     end
     
-    should "be able to parse a user object" do
+    should "be able to parse a user object even without authorization" do
       @object = @client.get("datapimp")
       assert_equal "Jonathan", @object["first_name"]
       assert_equal "Soeder", @object["last_name"]

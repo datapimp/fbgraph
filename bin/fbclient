@@ -4,5 +4,3 @@
 require "#{ File.dirname(__FILE__) }/../lib/fbgraph"
 
 @client = FacebookGraph::Client.new
-
-puts @client.get "datapimp/photos"
