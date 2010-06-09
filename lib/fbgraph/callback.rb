@@ -88,7 +88,6 @@ module FacebookGraph
     #TODO build out the handler objects for dealing with things like authorization
     class Hook < WEBrick::HTTPServlet::AbstractServlet
       def do_GET request,response
-        puts response.inspect
         response.status = 200
         response['Content-Type'] = "application/json"
         response.body = "{\"success\":true,\"method\":\"GET\"}"
