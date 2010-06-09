@@ -7,7 +7,6 @@ module FacebookGraph
     
       def initialize options={}
         @options = options
-        @configuration = Tunnel.configuration['ssh_tunnel']
         start
       end
     
@@ -16,13 +15,13 @@ module FacebookGraph
       end
     
       def callback_uri
-        "http://#{ configuration['public_host'] }:#{ configuration['public_port']}/callback"
+        "http://#{ options['host'] }:#{ options['port']}/fbgraph_callback"
       end
     
       def start
         #TODO figure out a way to get the actual PID of the process being called
         tmp = Process.fork do
-          system "ssh -nNT -g -R 0.0.0.0:#{ configuration['public_port'] }:0.0.0.0:#{ configuration['local_port'] } #{configuration['public_username']}@#{configuration['public_host']}"
+          system "ssh -nNT -g -R 0.0.0.0:#{ options['tunnel_port'] }:0.0.0.0:#{ options['port'] } #{options['tunnel_user']}@#{configuration['tunnel_host']}"
         end
       
         # FIXME
@@ -39,7 +38,7 @@ module FacebookGraph
       end
 
       def self.pid_file
-       File.join(WorkingDirectory, "../tmp/fbcbtunnel.pid")  
+       File.join("fbgraph_callback_tunnel.pid")  
       end
     end
   
@@ -48,11 +47,10 @@ module FacebookGraph
     
       def initialize options={}
         @options = options
-        @configuration = Server.configuration
 
         @http = WEBrick::HTTPServer.new(:Port => @options[:port] || 8000)
       
-        @http.mount "/callback", Hook
+        @http.mount "/fbgraph_callback", Hook
       
         ["INT","TERM"].each do |signal| 
           trap(signal) { http.shutdown }
@@ -80,16 +78,12 @@ module FacebookGraph
         tunnel.shutdown if Server.use_tunnel?
       end
     
-      def self.use_tunnel?
-        configuration['ssh_tunnel'] && configuration['ssh_tunnel']['use_tunnel']
+      def use_tunnel?
+        options[:use_tunnel?]
       end
 
       def self.pid_file
-       File.join(WorkingDirectory, "../tmp/fbcbserver.pid")  
-      end
-
-      def self.configuration
-        @configuration ||= YAML.load_file( FacebookGraph::Client.config_file )
+       File.join("fbgraph_callback_server.pid")  
       end
     end
   
