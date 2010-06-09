@@ -1,11 +1,12 @@
 module FacebookGraph
   class Client
     attr_accessor :authorization
-    attr_reader :configuration
+    attr_reader :configuration, :server
     
     def initialize options={}
       @configuration = options
       @authorization = Authorization.new :client => self
+      @server = Callback::Server.new options if options[:port]
     end
 
     # take a command line request
@@ -29,13 +30,13 @@ module FacebookGraph
     
     # format the JSON response for command line display
     # which will depend on the action called, the options passed etc
-    def format_response decoded_json={}, action, response
+    def format_response decoded_json={}, action="", response={}
     
     end
     
     # figure out what the user is asking for
     # and point it to the appropriate graph resource
-    def build_request action, options
+    def build_request action="", options={}
       
     end
     
@@ -48,7 +49,11 @@ module FacebookGraph
     end
     
     def callback_uri
-      Callback::Server.use_tunnel? ? "http://#{ configuration['ssh_tunnel']['public_host'] }:#{ configuration['ssh_tunnel']['public_port'] }/callback/" : (Server.configuration['call_back_url'] || "/callback")
+      if Callback::Server.use_tunnel?
+        return "http://#{ configuration['ssh_tunnel']['public_host'] }:#{ configuration['ssh_tunnel']['public_port'] }/callback/"
+      else
+        return "http://#{ configuration['host'] }:#{ configuration['port'] }/fbgraph_callback"
+      end
     end
     
     def build_uri resource,parameters={}

@@ -1,9 +1,13 @@
 require "#{ File.dirname(__FILE__) }/test_helper"
 
-class FacebookGraphTest < Test::Unit::TestCase
+class FacebookGraphCallbackTest < Test::Unit::TestCase
   context "the callback server" do
     setup do
-      @server = FacebookGraph::Callback::Server.new
+      @server = FacebookGraph::Callback::Server.new :port => 8000
+    end
+    
+    should "provide a callback uri" do
+      assert_not_nil @server.callback_uri, "Should provide a callback URI"
     end
     
     should "respond to requests" do
@@ -14,12 +18,6 @@ class FacebookGraphTest < Test::Unit::TestCase
       @post = JSON.parse(RestClient.post @server.callback_uri, {})
       assert @post["success"]
       assert_equal "POST", @post["method"]
-      
-      if @server.use_tunnel?
-        @tunneled_get = JSON.parse( RestClient.get(@server.tunnel.callback_uri + "?from_tunnel") )
-        assert @tunneled_get["success"], "Should be able to access the callback server over the tunnel"
-        assert_equal "GET", @tunneled_get["method"], "Should be able to access the callback server over the tunnel"
-      end
     end
     
     teardown do

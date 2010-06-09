@@ -32,7 +32,7 @@ module FacebookGraph
       end
 
       def self.pid_file
-       File.join("fbgraph_callback_tunnel.pid")  
+        "/tmp/fbgraph_callback_tunnel.pid"
       end
     end
   
@@ -81,7 +81,7 @@ module FacebookGraph
       end
 
       def self.pid_file
-       File.join("fbgraph_callback_server.pid")  
+        "/tmp/fbgraph_callback_server.pid"
       end
     end
   

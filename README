@@ -4,6 +4,10 @@ It is still a work in progress.
 
 It includes a webrick server for handling callbacks from the facebook api.  In addition there is a reverse SSH Tunnel is included for allowing the Facebook API to make callbacks to a webrick server on your local box ( mainly just for using oAuth2 and getting an access key)  This option will require you to have access to an SSH box which has GatewayPorts enabled.  For more info on reverse ssh tunnels, check 'man ssh' and 'man sshd_config'.
 
+NOTE:  For best results, put the tunnel configuration in a YAML file. 
+
+rake generate_config 
+
 If you are using this from a public facing box, you can disable the ssh tunnel.
 
 TODO:  Demonstrate configuration options of the client, command line args / yaml config file

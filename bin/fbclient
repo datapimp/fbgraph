@@ -4,3 +4,8 @@
 require "#{ File.dirname(__FILE__) }/../lib/fbgraph"
 
 @client = FacebookGraph::Client.new
+
+action = ARGV.pop
+options = ARGV
+
+puts @client.run action, option
