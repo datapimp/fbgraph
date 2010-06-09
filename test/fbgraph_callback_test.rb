@@ -1,9 +1,13 @@
 require "#{ File.dirname(__FILE__) }/test_helper"
 
 class FacebookGraphCallbackTest < Test::Unit::TestCase
+  class << self
+    attr_accessor :server, :last_test
+  end
+  
   context "the callback server" do
     setup do
-      @server = FacebookGraph::Callback::Server.new :port => 8000
+      @server ||= self.class.server ||= FacebookGraph::Callback::Server.new
     end
     
     should "provide a callback uri" do
@@ -18,10 +22,12 @@ class FacebookGraphCallbackTest < Test::Unit::TestCase
       @post = JSON.parse(RestClient.post @server.callback_uri, {})
       assert @post["success"]
       assert_equal "POST", @post["method"]
+      
+      self.class.last_test = true
     end
     
     teardown do
-      @server.shutdown
+      @server.shutdown if self.class.last_test
     end
   end
 end
