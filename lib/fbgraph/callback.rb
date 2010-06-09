@@ -1,7 +1,5 @@
 module FacebookGraph
   module Callback
-    WorkingDirectory = File.expand_path( File.dirname(__FILE__) )  
-  
     class Tunnel
       attr_reader :pid, :configuration, :options
     
@@ -9,11 +7,7 @@ module FacebookGraph
         @options = options
         start
       end
-    
-      def self.configuration
-        @configuration ||= YAML.load_file( FacebookGraph::Client.config_file )
-      end
-    
+      
       def callback_uri
         "http://#{ options['host'] }:#{ options['port']}/fbgraph_callback"
       end
@@ -59,6 +53,10 @@ module FacebookGraph
         start
       end
     
+      def callback_uri
+        "http://localhost:#{ options[:port] || 8000 }/fbgraph_callback"
+      end
+      
       def start
         @pid = Process.fork { http.start }
 
@@ -66,16 +64,16 @@ module FacebookGraph
           f << pid
         end
       
-        if Server.use_tunnel?
+        if use_tunnel?
           @tunnel = Tunnel.new
-          sleep 3 #give the tunnel time to connect
+          sleep 3
         end
       end
     
       def shutdown
         Process.kill('TERM',pid)
         FileUtils.rm("#{ Server.pid_file }")
-        tunnel.shutdown if Server.use_tunnel?
+        tunnel.shutdown if use_tunnel?
       end
     
       def use_tunnel?

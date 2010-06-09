@@ -12,7 +12,10 @@ class FacebookGraphClientTest < Test::Unit::TestCase
       assert_equal "Soeder", @object["last_name"]
     end
     
-    should "be able to request a friends list" do
+    should "not be able to request a friends list without authorization" do
+      assert_raise RestClient::InternalServerError do
+        @client.get("datapmp/friends")
+      end
     end
   end
 end

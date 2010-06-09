@@ -3,9 +3,9 @@ require 'rest_client'
 require 'webrick'
 require 'json' unless defined? JSON
 
-require 'fbgraph/callback'
-require 'fbgraph/client'
-require 'fbgraph/authorization'
+require "#{ File.dirname(__FILE__) }/fbgraph/client"
+require "#{ File.dirname(__FILE__) }/fbgraph/callback"
+require "#{ File.dirname(__FILE__) }/fbgraph/authorization"
 
 module FacebookGraph
   

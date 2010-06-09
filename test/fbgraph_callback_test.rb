@@ -7,17 +7,19 @@ class FacebookGraphTest < Test::Unit::TestCase
     end
     
     should "respond to requests" do
-      @get = JSON.parse(RestClient.get "http://localhost:8000/callback")
+      @get = JSON.parse(RestClient.get @server.callback_uri)
       assert @get["success"]
       assert_equal "GET", @get["method"]
       
-      @post = JSON.parse(RestClient.post "http://localhost:8000/callback", {})
+      @post = JSON.parse(RestClient.post @server.callback_uri, {})
       assert @post["success"]
       assert_equal "POST", @post["method"]
       
-      @tunneled_get = JSON.parse( RestClient.get(@server.tunnel.callback_uri + "?from_tunnel") )
-      assert @tunneled_get["success"], "Should be able to access the callback server oer the tunnel"
-      assert_equal "GET", @tunneled_get["method"], "Should be able to access the callback server over the tunnel"
+      if @server.use_tunnel?
+        @tunneled_get = JSON.parse( RestClient.get(@server.tunnel.callback_uri + "?from_tunnel") )
+        assert @tunneled_get["success"], "Should be able to access the callback server over the tunnel"
+        assert_equal "GET", @tunneled_get["method"], "Should be able to access the callback server over the tunnel"
+      end
     end
     
     teardown do
