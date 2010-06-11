@@ -21,7 +21,7 @@ class FacebookGraphCallbackTest < Test::Unit::TestCase
     end
     
     should "provide a callback uri" do
-    #  assert_not_nil @server.callback_uri, "Should provide a callback URI"
+      assert_not_nil @server.callback_uri, "Should provide a callback URI"
     end
     
     should "respond to requests" do
