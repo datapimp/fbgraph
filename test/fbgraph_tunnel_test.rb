@@ -1,16 +1,23 @@
 require "#{ File.dirname(__FILE__) }/test_helper"
 
 class FacebookGraphTunnelTest < Test::Unit::TestCase
-  class << self
-    attr_accessor :server, :last_test
+
+  should "be the truth" do
+    assert true
   end
   
-  context "the callback server" do
-    setup do
-      @server ||= self.class.server ||= FacebookGraph::Callback::Server.new
+  puts "Skipping Tests -- Configuration Not Present at #{ FacebookGraph::Callback::Server.configuration_file }" unless FacebookGraph::Callback::Server.configuration_present?
+  if FacebookGraph::Callback::Server.configuration_present?
+    class << self
+      attr_accessor :server, :last_test
     end
-    
-    if File.exists?( File.dirname(__FILE__) + '/../config/fbgraph_client.yaml' )
+
+    context "the callback server" do
+      setup do
+        @server ||= self.class.server ||= FacebookGraph::Callback::Server.new
+        sleep 2
+      end
+
       should "provide access to the tunnel" do
         assert_not_nil @server.tunnel
         assert @server.use_tunnel?, "The server should be configured to use the tunnel"
@@ -23,25 +30,18 @@ class FacebookGraphTunnelTest < Test::Unit::TestCase
       end
 
       should "respond to tunneled requests" do
-        if @server.use_tunnel?
-          @tunneled_get = JSON.parse( RestClient.get(@server.tunnel.callback_uri + "?from_tunnel") )
-          assert @tunneled_get["success"], "Should be able to access the callback server over the tunnel"
-          assert_equal "GET", @tunneled_get["method"], "Should be able to access the callback server over the tunnel"
-        end
+        @tunneled_get = JSON.parse( RestClient.get(@server.tunnel.callback_uri + "?from_tunnel") )
+        assert @tunneled_get["success"], "Should be able to access the callback server over the tunnel"
+        assert_equal "GET", @tunneled_get["method"], "Should be able to access the callback server over the tunnel"
       end
-    else
-      puts "Skipping Tunnel Tests -- No Configuration Provided"
-    end
-    
-    should "say hi" do
-      self.class.last_test = true
-    end
-    
-    teardown do
-      if self.class.last_test
-        puts "Shutting down server"
-        @server.shutdown 
+
+      teardown do
+        if self.class.last_test
+          puts "Shutting down server"
+          @server.shutdown 
+        end
       end
     end
   end
+  
 end

@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+
+#TODO Make it so this file references the gem'd version of the fbgraph_client
+require "#{ File.dirname(__FILE__) }/../lib/fbgraph"
+
+operation = ARGV.shift
+
+def pid
+  if File.exists?(FacebookGraph::Callback::Server.pid_file)
+    return IO.read(FacebookGraph::Callback::Server.pid_file).to_i
+  end
+end
+
+def shutdown
+  Process.kill('TERM',pid)
+  FileUtils.rm(FacebookGraph::Callback::Server.pid_file)
+end
+
+def start
+  @server = FacebookGraph::Callback::Server.new
+end
+
+if operation == "start"
+  if !pid.nil?
+    puts "FB Graph Callback Server already runnying. Restarting"
+    shutdown
+    sleep 4
+  end
+
+  start
+end
+
+if operation == "stop"
+  if pid.nil?
+    puts "FB Graph Server Not Running"
+  else
+    shutdown
+  end
+end

@@ -10,6 +10,6 @@ task :generate_configuration do
   
   FileUtils.mkdir("./config") unless File.exists?("./config")
   File.open("./config/fbgraph_client.yml", "w") do |f|
-    f.puts "port: 8000\ntunnel:\n\thost: soederpop.com\n\tuser: jonathan\n\tport: 8000"
+    f.puts "port: 8000\ntunnel:\n  host: soederpop.com\n  user: jonathan\n  port: 8000"
   end
 end

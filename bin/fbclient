@@ -3,9 +3,5 @@
 #TODO Make it so this file references the gem'd version of the fbgraph_client
 require "#{ File.dirname(__FILE__) }/../lib/fbgraph"
 
-@client = FacebookGraph::Client.new
 
-action = ARGV.pop
-options = ARGV
-
-puts @client.run action, option
+config = YAML.load File.open(FacebookGraph::Callback::Server.configuration_file)

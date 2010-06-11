@@ -1,17 +1,27 @@
 require "#{ File.dirname(__FILE__) }/test_helper"
+require 'socket'
 
 class FacebookGraphCallbackTest < Test::Unit::TestCase
-  class << self
-    attr_accessor :server, :last_test
-  end
-  
   context "the callback server" do
     setup do
-      @server ||= self.class.server ||= FacebookGraph::Callback::Server.new
+      # TODO - use testing framework to only have one setup block per context
+      # e.g. fast context for shoulda for rails
+      
+      @port = 10000 + ( rand * 10**4 )
+      @server = FacebookGraph::Callback::Server.new :port => @port.to_i
+      sleep 1
+    end
+    
+    should "instantiate itself and listen on the specified port" do
+      assert_not_nil @server
+      assert_nothing_raised do
+        @connection = TCPSocket.open("localhost",@port.to_i)
+      end
+      
     end
     
     should "provide a callback uri" do
-      assert_not_nil @server.callback_uri, "Should provide a callback URI"
+    #  assert_not_nil @server.callback_uri, "Should provide a callback URI"
     end
     
     should "respond to requests" do
@@ -22,12 +32,10 @@ class FacebookGraphCallbackTest < Test::Unit::TestCase
       @post = JSON.parse(RestClient.post @server.callback_uri, {})
       assert @post["success"]
       assert_equal "POST", @post["method"]
-      
-      self.class.last_test = true
     end
     
     teardown do
-      @server.shutdown if self.class.last_test
+      @server.shutdown
     end
   end
 end

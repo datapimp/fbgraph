@@ -5,17 +5,31 @@ module FacebookGraph
     
       def initialize options={}
         @options = options
+        
+        options[:host] ||= "localhost"
+        options[:port] ||= 8000
+        
+        if Callback::Server.configuration_present?
+          config = Callback::Server.parse_config
+          @options[:port] ||= config['port']
+          @options[:tunnel_port] ||= config['tunnel'] && config['tunnel']['port']
+          @options[:tunnel_host] ||= config['tunnel'] && config['tunnel']['host']
+          @options[:tunnel_user] ||= config['tunnel'] && config['tunnel']['user']
+          
+          raise "Invalid Configuration" unless @options[:tunnel_port]
+        end
+
         start
       end
       
       def callback_uri
-        "http://#{ options['host'] }:#{ options['port']}/fbgraph_callback"
+        "http://#{ options[:host] }:#{ options['port']}/fbgraph_callback"
       end
     
       def start
         #TODO figure out a way to get the actual PID of the process being called
         tmp = Process.fork do
-          system "ssh -nNT -g -R 0.0.0.0:#{ options['tunnel_port'] }:0.0.0.0:#{ options['port'] } #{options['tunnel_user']}@#{configuration['tunnel_host']}"
+          system "ssh -nNT -g -R 0.0.0.0:#{ options[:tunnel_port] }:0.0.0.0:#{ options[:port] } #{options[:tunnel_user]}@#{options[:tunnel_host]}"
         end
       
         # FIXME
@@ -42,7 +56,19 @@ module FacebookGraph
       def initialize options={}
         @options = options
 
-        @http = WEBrick::HTTPServer.new(:Port => @options[:port] || 8000)
+        options[:host] ||= "localhost"
+        options[:port] ||= 8000
+        
+        if Callback::Server.configuration_present?
+          config = self.class.parse_config
+          
+          @options[:port] ||= config['port']
+          @options[:tunnel_port] ||= config['tunnel']['port']
+          @options[:tunnel_host] ||= config['tunnel']['host']
+          @options[:tunnel_user] ||= config['tunnel']['user']
+        end
+
+        @http = WEBrick::HTTPServer.new(:Port => @options[:port])
       
         @http.mount "/fbgraph_callback", Hook
       
@@ -53,8 +79,21 @@ module FacebookGraph
         start
       end
     
+      def self.parse_config
+        raise "Configuration File Not Present.  Run rake:generate_configuration" unless configuration_present?
+        YAML.load( File.open(configuration_file) )
+      end
+      
+      def self.configuration_present?
+        File.exists?( configuration_file )
+      end
+      
+      def self.configuration_file
+        File.dirname(__FILE__) + '/../../config/fbgraph_client.yml'      
+      end
+      
       def callback_uri
-        "http://localhost:#{ options[:port] || 8000 }/fbgraph_callback"
+        "http://localhost:#{ options[:port] }/fbgraph_callback"
       end
       
       def start
@@ -77,7 +116,7 @@ module FacebookGraph
       end
     
       def use_tunnel?
-        options[:use_tunnel?]
+        !options[:no_tunnel] && options.keys.collect(&:to_s).grep(/^tunnel_/)
       end
 
       def self.pid_file
