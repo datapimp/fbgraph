@@ -14,6 +14,7 @@ TODO:  Demonstrate configuration options of the client, command line args / yaml
 
 Still left to do:
  
+0) Find a good way to run one server for the whole test suite...
 1) use nokogiri / mechanize to automate authorizing this application on your facebook profile ( just supply your login )
 2) automate handshaking with the graph api to get authorization credentials, store those credentials in your user environment for use in subsequent requests
 3) build out the various functions for communicating with the API

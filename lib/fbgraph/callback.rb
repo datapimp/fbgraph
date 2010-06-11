@@ -23,7 +23,7 @@ module FacebookGraph
       end
       
       def callback_uri
-        "http://#{ options[:host] }:#{ options['port']}/fbgraph_callback"
+        "http://#{ options[:host] }:#{ options[:port]}/fbgraph_callback"
       end
     
       def start
@@ -104,7 +104,7 @@ module FacebookGraph
         end
       
         if use_tunnel?
-          @tunnel = Tunnel.new
+          @tunnel = Tunnel.new :port => options[:port]
           sleep 3
         end
       end
